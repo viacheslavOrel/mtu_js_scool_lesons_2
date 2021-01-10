@@ -18,8 +18,8 @@ const $resultFormName = $resultForm.querySelector('#inputName');
 const $resultFormSaveBtn = document.querySelector('#resultFormSaveBtn');
 
 // data --------------------------------------------------
-let minutes = 0;
-let seconds = 3;
+let minutes = 1;
+let seconds = 0;
 let counter;
 
 let isGameStarted = false;
@@ -185,7 +185,7 @@ function saveResult(event) {
         point: $resultFormPoint.value
     };
 
-    fetch('http://localhost:3000/results', {
+    fetch('http://localhost:9090/results', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json;charset=utf-8' },
         body: JSON.stringify(data),
@@ -205,7 +205,7 @@ $btnReset.addEventListener('click', resetGame);
 
 
 // results -----------------------------------------------------
-fetch('http://localhost:3000/results')
+fetch('http://localhost:9090/results')
     .then(res => res.json())
     .then(res => {
         $resultPreloader.hidden = true;
