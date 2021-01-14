@@ -1,34 +1,24 @@
 const { assert } = require('chai');
-const got = require('got');
+const Helper = require('../taskTestHelper');
 const { positive, negative } = require('../fixtures/arraySort');
 
-describe('Rout test/post. Positive', () => {
+const helper = new Helper('/api/tasks/arraySort');
+
+describe('Rout /api/tasks/arraySort. Positive', () => {
     positive.forEach(({ name, arr1, arr2, expected }) => {
         it(name, async () => {
-            const { body } = await got.post('http://localhost:9090/api/tasks/arraySort', {
-                json: {
-                    arr1,
-                    arr2
-                },
-                responseType: 'json'
-            });
-            assert.deepEqual(body.result, expected, 'Error');
+            const { body } = await helper.gotPost({ arr1, arr2 })
+            assert.deepEqual(body.result, expected.result, 'Error');
         })
     });
 });
 
-describe('Rout test/post. Negative', () => {
-    negative.forEach(({ name, arr1, arr2, extend: { status, message } }) => {
+describe('Rout /api/tasks/arraySort. Negative', () => {
+    negative.forEach(({ name, arr1, arr2, expected}) => {
         it(name, async () => {
-            const {statusCode, resMessage} = await got.post('http://localhost:9090/api/tasks/arraySort', {
-                json: {
-                    arr1,
-                    arr2
-                },
-                responseType: 'json'
-            });
-            assert.equal(statusCode, status, `Expected ${status}`);
-            assert.equal(resMessage, message, `Expected ${message}`);
+            const {status, body} = await helper.gotPost({ arr1, arr2 });
+            assert.equal(status, expected.status, 'Error');
+            assert.equal(body, expected.message, 'Error');
         })
     })
 })

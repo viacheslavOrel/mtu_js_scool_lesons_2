@@ -3,47 +3,66 @@ module.exports = {
         {
             name: 'Palindrome 121',
             input: 121,
-            expected: true
+            expected: {
+                stauts: 200,
+                message: '',
+                result: true
+            }
         },
         {
             name: 'Palindrome -121',
             input: -121,
-            expected: false
+            expected: {
+                stauts: 200,
+                message: '',
+                result: false
+            }
         },
         {
             name: 'Palindrome 10',
             input: 10,
-            expected: false
+            expected: {
+                stauts: 200,
+                message: '',
+                result: false
+            }
         },
         {
             name: 'Palindrome 2002',
             input: 2002,
-            expected: true
+            expected: {
+                stauts: 200,
+                message: '',
+                result: true
+            }
         },
     ],
     negative: [
         {
             name: 'Palindrome "test"',
             input: 'test',
-            extend: {
+            expected: {
                 status: 400,
-                message: 'Incorrect type of the incoming data'
+                message: 'Incorrect type of the incoming data',
+                result: null
             }
         },
         {
             name: 'Palindrome ""',
             input: '',
-            extend: {
+            expected: {
                 status: 400,
-                message: 'Incorrect type of the incoming data'
+                message: 'Incorrect type of the incoming data',
+                result: null
             }
         },
         {
             name: 'Palindrome "test"',
             input: '121',
-            extend: {
+            expected: {
                 status: 400,
-                message: 'Incorrect type of the incoming data'
+                message: 'Incorrect type of the incoming data',
+                result: null
             }
         },
     ]

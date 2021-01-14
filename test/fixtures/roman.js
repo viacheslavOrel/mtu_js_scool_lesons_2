@@ -3,54 +3,84 @@ module.exports = {
         {
             name: "Convert III. Should be equal",
             input: 'III',
-            extend: 3
+            expected: {
+                status: 200,
+                message: '',
+                result: 3
+            }
         },
         {
             name: "Convert VI. Should be equal",
             input: 'VI',
-            extend: 6
+            expected: {
+                status: 200,
+                message: '',
+                result: 6
+            }
         },
         {
             name: "Convert IX. Should be equal",
             input: 'IX',
-            extend: 9
+            expected: {
+                status: 200,
+                message: '',
+                result: 9
+            }
         },
         {
             name: "Convert LVIII. Should be equal",
             input: 'LVIII',
-            extend: 58
+            expected: {
+                status: 200,
+                message: '',
+                result: 58
+            }
         },
         {
             name: "Convert MCMXCIV. Should be equal",
             input: 'MCMXCIV',
-            extend: 1994
+            expected: {
+                status: 200,
+                message: '',
+                result: 1994
+            }
         },
         {
             name: "Convert lviii. Should be equal",
             input: 'lviii',
-            extend: 58
+            expected: {
+                status: 200,
+                message: '',
+                result: 58
+            }
         },
         {
             name: "Convert McmXCiV. Should be equal",
             input: 'McmXCiV',
-            extend: 1994
+            expected: {
+                status: 200,
+                message: '',
+                result: 1994
+            }
         }
     ],
     negative: [
         {
             name: "Convert POCA",
             input: 'POCA',
-            extend: {
+            expected: {
                 status: 400,
-                message: 'Incorrect type of the incoming data'
+                message: 'Incorrect type of the incoming data',
+                result: null
             }
         },
         {
             name: "Convert empty",
             input: '',
-            extend: {
+            expected: {
                 status: 400,
-                message: 'Incorrect type of the incoming data'
+                message: 'Incorrect type of the incoming data',
+                result: null
             }
         }
     ]

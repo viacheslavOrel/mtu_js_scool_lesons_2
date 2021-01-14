@@ -1,32 +1,24 @@
 const { assert } = require('chai');
-const got = require('got');
 const { positive, negative } = require('../fixtures/palindrome');
+const Helper = require('../taskTestHelper');
 
-describe('Rout test/post. Positive', () => {
+const helper = new Helper('/api/tasks/palindrome');
+
+describe('Rout /api/tasks/palindrome. Positive', () => {
     positive.forEach(({ name, input, expected }) => {
         it(name, async () => {
-            const { body } = await got.post('http://localhost:9090/api/tasks/palindrome', {
-                json: {
-                    input
-                },
-                responseType: 'json'
-            });
-            assert.strictEqual(body.result, expected, 'Error');
+            const { body } = await helper.gotPost({ input });
+            assert.strictEqual(body.result, expected.result, 'Error');
         })
     });
 });
 
-describe('Rout test/post. Negative', () => {
-    negative.forEach(({ name, input, extend: { status, message } }) => {
+describe('Rout /api/tasks/palindrome Negative', () => {
+    negative.forEach(({ name, input, expected }) => {
         it(name, async () => {
-            const {statusCode, resMessage} = await got.post('http://localhost:9090/api/tasks/palindrome', {
-                json: {
-                    input
-                },
-                responseType: 'json'
-            });
-            assert.equal(statusCode, status, `Expected ${status}`);
-            assert.equal(resMessage, message, `Expected ${message}`);
+            const { status, body } = await helper.gotPost({ input });
+            assert.equal(status, expected.status, 'Error');
+            assert.equal(body, expected.message, 'Error');
         })
     })
 })
