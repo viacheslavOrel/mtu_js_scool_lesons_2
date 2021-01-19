@@ -1,59 +1,63 @@
 const express = require('express');
 const path = require('path');
+const cookiesParser = require('cookie-parser');
+const { MongoClient } = require('mongodb');
 
+const allController = require('./controllers/allController');
+
+const homeRouter = require('./routes/homeRouter');
+const loginRouter = require('./routes/loginRouter');
+
+const PORT = 9090;
 
 const app = express();
-const port = 9090;
-
-// middleware ----------------------------------------------------------------
-const cookiesParser = require('cookie-parser');
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookiesParser());
+app.set("view engine", "hbs");
 
-// Static data -------------------------------------------------------------
-const jsPath = path.join(__dirname, 'public', 'javascript');
-const cssPath = path.join(__dirname, 'public', 'stylesheets');
+const mongoUrl = 'mongodb+srv://api:1DK9xyQmtGK7gfLq@cluster0.ottfg.mongodb.net/MTU_JS_SCOOL?retryWrites=true&w=majority';
+const mtuDbName = 'mtu_js_school_remove_the_cube';
+const client = new MongoClient(mongoUrl, { 
+    useUnifiedTopology: true,
+    useNewUrlParser: true 
+});
+
+client.connect((err, db) => {
+    if (err) throw new Error('Error connection to db');
+    app.locals.client = client;
+
+    app.listen(PORT, () => console.log('Server start'));
+});
+
+app.use(allController.isAuthorization);
+app.use(express.static(path.join(__dirname, 'static')));
+
+app.use('/', homeRouter);
+app.use('/login', loginRouter);
+
+// // express ------------------------------------------------------------------
+// const app = express();
+
+// // // middleware ---------------------------------------------------------------
+// // app.use(express.json());
+// // app.use(express.urlencoded({ extended: true }));
+// // app.use(cookiesParser());
+
+// // // Game route --------------------------------------------------------------
+// // const home = require('./controllers/home');
+// // const login = require('./controllers/login');
+// // const logout = require('./controllers/logout');
+// // const getResults = require('./controllers/getResult');
+// // const setResult = require('./controllers/setResult');
+
+// // app.get('/', home);
+
+// // app.post('/login', login);
+// // app.get('/logout', logout);
+
+// // app.get('/results', getResults);
+// // app.post('/results', setResult);
 
 
-app.use(express.static(jsPath));
-app.use(express.static(cssPath));
-
-// Game route --------------------------------------------------------------
-const home = require('./controllers/home');
-const login = require('./controllers/login');
-const logout = require('./controllers/logout');
-const getResults = require('./controllers/getResult');
-const setResult = require('./controllers/setResult');
-
-app.get('/', home);
-
-app.post('/login', login);
-app.get('/logout', logout);
-
-app.get('/results', getResults);
-app.post('/results', setResult);
-
-
-// api routs -------------------------------------------------------------------
-const romanConvert = require('./controllers/task/roman');
-const palindrome = require('./controllers/task/palindrome');
-const brackets = require('./controllers/task/brackets');
-const arraySort = require('./controllers/task/arraySort');
-const nexIndex = require('./controllers/task/nextIndex');
-
-
-app.post('/api/tasks/roman', romanConvert);
-app.post('/api/tasks/palindrome', palindrome);
-app.post('/api/tasks/brackets', brackets);
-app.post('/api/tasks/arraySort', arraySort);
-app.post('/api/tasks/nextIndex', nexIndex);
-
-
-// errors ----------------------------------------------------------------------
-const errorHandler = require('./controllers/error');
-
-app.use(errorHandler);
-
-app.listen(port);
+// app.listen(port);
