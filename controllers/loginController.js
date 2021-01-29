@@ -1,34 +1,24 @@
-const path = require('path');
-const { verifyPassword } = require('./helper');
+const passwordHash = require('password-hash');
+const userModel = require('../models/user');
 
-const loginFormView = path.join(__dirname, '../controllers/..', 'views', 'login.handlebars');
+const title = 'Remove the cube. Login';
 
-exports.getForm = function(req, res) {
-    res.render(loginFormView, {
-        validate: {
-            login: '',
-            password: ''
-        },
-        login: ''
-    });
+exports.getLoginForm = function (req, res) {
+    res.render('login', { title });
 }
 
-exports.login = async function(req, res) {
+exports.validateLoginForm = async function (req, res) {
     const login = req.body.login.trim();
-    const password = req.body.password;
+    const user = await userModel.findOne({ login });
 
-    const user = await req.app.locals.db.collections('users').findOne({ login });
-    const validate = {
-        login: '',
-        password: '',
-    }
+    const validate = {};
 
     if (user) {
         validate.login = 'is-valid';
 
-        if (verifyPassword(password, user.password)) {
-            res.cookie('userId', user._id, { expires: new Date(Date.now() + 24 * 3600000) } )
-                .redirect('/');
+        if (passwordHash.verify(req.body.password, user.password)) {
+            req.session.user = user;
+            res.redirect('/');        
         } else {
             validate.password = 'is-invalid';
         }
@@ -36,13 +26,5 @@ exports.login = async function(req, res) {
         validate.login = 'is-invalid';
     }
 
-    res.render()
-
-    
-    if (user && verifyPassword(password, user.password)) {
-        res.cookie('userId', user._id, { expires: new Date(Date.now() + 24 * 3600000) })
-            .redirect('/');
-    } else {
-        res.render(loginFormView, { validate , login });
-    }
+    res.render('login', { title, login, validate });
 }

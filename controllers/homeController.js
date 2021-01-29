@@ -1,5 +1,6 @@
-const path = require('path');
-
-exports.index = function(req, res) {
-    res.sendFile(path.join(__dirname, '../controllers/..', 'views', 'game.html'));
+exports.index = function (req, res) {
+    res.render('game', {
+        title: 'Remove the cube',
+        username: req.session.user.username
+    });
 }

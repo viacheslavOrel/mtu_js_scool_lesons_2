@@ -1,63 +1,61 @@
 const express = require('express');
-const path = require('path');
+const exphb = require('express-handlebars');
 const cookiesParser = require('cookie-parser');
-const { MongoClient } = require('mongodb');
+const path = require('path');
+const session = require('express-session');
+const expressSanitizer = require('express-sanitizer');
 
-const allController = require('./controllers/allController');
+const dbConnection = require('./dbConnection');
 
-const homeRouter = require('./routes/homeRouter');
-const loginRouter = require('./routes/loginRouter');
+const isAutorization = require('./node/isAuthorization');
 
-const PORT = 9090;
+const homeRouters = require('./routes/homeRoutes');
+const loginRoutes = require('./routes/loginRoutes');
+const logoutRoutes = require('./routes/logoutRoutes');
+const registerRouters = require('./routes/registerRouters');
+const resultsRouter = require('./routes/resultsRoutes');
 
+// config express ------------------------------------------------------------------------------------------------------
 const app = express();
+
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(expressSanitizer());
 app.use(cookiesParser());
-app.set("view engine", "hbs");
+app.use(express.urlencoded({extended: true}));
 
-const mongoUrl = 'mongodb+srv://api:1DK9xyQmtGK7gfLq@cluster0.ottfg.mongodb.net/MTU_JS_SCOOL?retryWrites=true&w=majority';
-const mtuDbName = 'mtu_js_school_remove_the_cube';
-const client = new MongoClient(mongoUrl, { 
-    useUnifiedTopology: true,
-    useNewUrlParser: true 
+// config session ------------------------------------------------------------------------------------------------------
+app.use(session({
+    secret: 'x77!M=pn&l%7L0%',
+    resave: false,
+    cookie: {maxAge: 24 * 3600000},
+    saveUninitialized: true
+}));
+
+// config views --------------------------------------------------------------------------------------------------------
+const hbs = exphb.create({
+    defaultLayout: 'main',
+    extname: 'hbs'
+});
+app.engine('hbs', hbs.engine);
+app.set('view engine', 'hbs');
+app.set('views', 'views');
+
+dbConnection('api', '1DK9xyQmtGK7gfLq', () => {
+    app.listen(9090, () => {
+        console.log('Server has been started..');
+    });
 });
 
-client.connect((err, db) => {
-    if (err) throw new Error('Error connection to db');
-    app.locals.client = client;
+// config routes -------------------------------------------------------------------------------------------------------
 
-    app.listen(PORT, () => console.log('Server start'));
-});
+app.use('/login', loginRoutes);
+app.use('/registration', registerRouters);
 
-app.use(allController.isAuthorization);
+app.use(isAutorization);
+
+app.use('/logout', logoutRoutes);
+
 app.use(express.static(path.join(__dirname, 'static')));
+app.use('/', homeRouters);
 
-app.use('/', homeRouter);
-app.use('/login', loginRouter);
-
-// // express ------------------------------------------------------------------
-// const app = express();
-
-// // // middleware ---------------------------------------------------------------
-// // app.use(express.json());
-// // app.use(express.urlencoded({ extended: true }));
-// // app.use(cookiesParser());
-
-// // // Game route --------------------------------------------------------------
-// // const home = require('./controllers/home');
-// // const login = require('./controllers/login');
-// // const logout = require('./controllers/logout');
-// // const getResults = require('./controllers/getResult');
-// // const setResult = require('./controllers/setResult');
-
-// // app.get('/', home);
-
-// // app.post('/login', login);
-// // app.get('/logout', logout);
-
-// // app.get('/results', getResults);
-// // app.post('/results', setResult);
-
-
-// app.listen(port);
+app.use('/results', resultsRouter);

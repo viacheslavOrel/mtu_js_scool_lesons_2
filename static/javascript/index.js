@@ -181,8 +181,8 @@ function saveResult(event) {
     event.preventDefault();
 
     const data = {
-        name: $resultFormName.value,
-        point: $resultFormPoint.value
+        username: $resultFormName.value,
+        gameResult: $resultFormPoint.value
     };
 
     fetch('http://localhost:9090/results', {
