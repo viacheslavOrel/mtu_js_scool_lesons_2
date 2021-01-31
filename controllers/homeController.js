@@ -1,6 +1,7 @@
-exports.index = function (req, res) {
+exports.index = function ({ session: { user } }, res) {
     res.render('game', {
         title: 'Remove the cube',
-        username: req.session.user.username
+        username: user.username,
+        isAdmin: user.userRole === 'admin'
     });
 }
