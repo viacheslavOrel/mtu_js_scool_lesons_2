@@ -9,6 +9,12 @@
 </head>
 <body>
 <div class="container">
+    {{#if isAdmin}}
+        <div class="row">
+            <a href="/">Game</a>
+            <a href="/admin/0">Admin</a>
+        </div>
+    {{/if}}
     {{{ body }}}
 </div>
 </body>

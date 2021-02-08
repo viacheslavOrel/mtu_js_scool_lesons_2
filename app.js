@@ -14,6 +14,7 @@ const loginRoutes = require('./routes/loginRoutes');
 const logoutRoutes = require('./routes/logoutRoutes');
 const registerRouters = require('./routes/registerRouters');
 const resultsRouter = require('./routes/resultsRoutes');
+const adminRouter = require('./routes/adminRouter');
 
 // config express ------------------------------------------------------------------------------------------------------
 const app = express();
@@ -59,3 +60,5 @@ app.use(express.static(path.join(__dirname, 'static')));
 app.use('/', homeRouters);
 
 app.use('/results', resultsRouter);
+
+app.use('/admin', adminRouter);
