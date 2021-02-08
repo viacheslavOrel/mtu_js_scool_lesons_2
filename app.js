@@ -1,54 +1,40 @@
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
 
 const app = express();
-const port = 3000;
+const port = 9090;
 
+// Static data -------------------------------------------------------------
 const jsPath = path.join(__dirname, 'public', 'javascript');
 const cssPath = path.join(__dirname, 'public', 'stylesheets');
-const resultPath = path.join(__dirname, 'data', 'result.json');
 
 app.use(express.static(jsPath));
 app.use(express.static(cssPath));
-
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'bin', 'index.html'));
-});
-
-app.get('/results', (req, res) => {
-    fs.readFile(resultPath, 'utf8', (err, data) => {
-        if (err) {
-            res.json([]);
-        } else {
-            const results = JSON.parse(data);
-            results.sort((a, b) => b.point - a.point);
-            res.json(results);
-        }
-    })
-});
-
 app.use(express.json());
 
-app.post('/results', (req, res) => {
-    const result = req.body;
+// Game route --------------------------------------------------------------
+const home = require('./controllers/home');
+const getResults = require('./controllers/getResult');
+const setResult = require('./controllers/setResult');
 
-    let results = [result];
-    fs.readFile(resultPath, 'utf8', (err, data) => {
-        if (err) {
-            //
-        } else {
-            results = [...results, ...JSON.parse(data)];
-        }
+app.get('/', home);
+app.get('/results', getResults);
+app.post('/results', setResult);
 
-        fs.writeFile(resultPath, JSON.stringify(results), err => {
-            if (err) {
-                throw err;
-            } else {
-                res.send(JSON.stringify(results.sort((a, b) => b.point - a.point)));
-            }
-        });
-    });
-})
+
+// api routs -------------------------------------------------------------------
+const romanConvert = require('./controllers/task/roman');
+const palindrome = require('./controllers/task/palindrome');
+const brackets = require('./controllers/task/brackets');
+const arraySort = require('./controllers/task/arraySort');
+const nexIndex = require('./controllers/task/nextIndex');
+
+
+app.post('/api/tasks/roman', romanConvert);
+app.post('/api/tasks/palindrome', palindrome);
+app.post('/api/tasks/brackets', brackets);
+app.post('/api/tasks/arraySort', arraySort);
+app.post('/api/tasks/nextIndex', nexIndex);
+
 
 app.listen(port);
