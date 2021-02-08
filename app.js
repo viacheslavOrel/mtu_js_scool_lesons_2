@@ -1,59 +1,61 @@
 const express = require('express');
-const path = require('path');
-
-
-const app = express();
-const port = 9090;
-
-// middleware ----------------------------------------------------------------
+const exphb = require('express-handlebars');
 const cookiesParser = require('cookie-parser');
+const path = require('path');
+const session = require('express-session');
+const expressSanitizer = require('express-sanitizer');
+
+const dbConnection = require('./dbConnection');
+
+const isAutorization = require('./node/isAuthorization');
+
+const homeRouters = require('./routes/homeRoutes');
+const loginRoutes = require('./routes/loginRoutes');
+const logoutRoutes = require('./routes/logoutRoutes');
+const registerRouters = require('./routes/registerRouters');
+const resultsRouter = require('./routes/resultsRoutes');
+
+// config express ------------------------------------------------------------------------------------------------------
+const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(expressSanitizer());
 app.use(cookiesParser());
+app.use(express.urlencoded({extended: true}));
 
-// Static data -------------------------------------------------------------
-const jsPath = path.join(__dirname, 'public', 'javascript');
-const cssPath = path.join(__dirname, 'public', 'stylesheets');
+// config session ------------------------------------------------------------------------------------------------------
+app.use(session({
+    secret: 'x77!M=pn&l%7L0%',
+    resave: false,
+    cookie: {maxAge: 24 * 3600000},
+    saveUninitialized: true
+}));
 
+// config views --------------------------------------------------------------------------------------------------------
+const hbs = exphb.create({
+    defaultLayout: 'main',
+    extname: 'hbs'
+});
+app.engine('hbs', hbs.engine);
+app.set('view engine', 'hbs');
+app.set('views', 'views');
 
-app.use(express.static(jsPath));
-app.use(express.static(cssPath));
+dbConnection('api', '1DK9xyQmtGK7gfLq', () => {
+    app.listen(9090, () => {
+        console.log('Server has been started..');
+    });
+});
 
-// Game route --------------------------------------------------------------
-const home = require('./controllers/home');
-const login = require('./controllers/login');
-const logout = require('./controllers/logout');
-const getResults = require('./controllers/getResult');
-const setResult = require('./controllers/setResult');
+// config routes -------------------------------------------------------------------------------------------------------
 
-app.get('/', home);
+app.use('/login', loginRoutes);
+app.use('/registration', registerRouters);
 
-app.post('/login', login);
-app.get('/logout', logout);
+app.use(isAutorization);
 
-app.get('/results', getResults);
-app.post('/results', setResult);
+app.use('/logout', logoutRoutes);
 
+app.use(express.static(path.join(__dirname, 'static')));
+app.use('/', homeRouters);
 
-// api routs -------------------------------------------------------------------
-const romanConvert = require('./controllers/task/roman');
-const palindrome = require('./controllers/task/palindrome');
-const brackets = require('./controllers/task/brackets');
-const arraySort = require('./controllers/task/arraySort');
-const nexIndex = require('./controllers/task/nextIndex');
-
-
-app.post('/api/tasks/roman', romanConvert);
-app.post('/api/tasks/palindrome', palindrome);
-app.post('/api/tasks/brackets', brackets);
-app.post('/api/tasks/arraySort', arraySort);
-app.post('/api/tasks/nextIndex', nexIndex);
-
-
-// errors ----------------------------------------------------------------------
-const errorHandler = require('./controllers/error');
-
-app.use(errorHandler);
-
-app.listen(port);
+app.use('/results', resultsRouter);

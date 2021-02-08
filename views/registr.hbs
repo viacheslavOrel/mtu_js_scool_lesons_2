@@ -1,0 +1,32 @@
+<h1>Remove the cube</h1>
+<h2>Register new user</h2>
+<form action="/registration" method="POST">
+    <div class="mb-3">
+        <label for="login" class="form-label">Login</label>
+        <input type="text" class="form-control {{ validation.login }}" id="login" name="login"
+               value="{{ login }}" required>
+        <div class="valid-feedback">Looks good</div>
+        <div class="invalid-feedback">login can contain only lowercase Latin letters and numbers</div>
+    </div>
+    <div class="mb-3">
+        <label for="name" class="form-label">Name</label>
+        <input type="text" class="form-control {{ validation.username }}" id="name" name="name" value="{{ username }}"
+               required>
+        <div class="valid-feedback">Looks good</div>
+        <div class="invalid-feedback">the name can contain only letters of the English and Russian alphabets, numbers,
+            space
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="password">Password</label>
+        <input type="password" class="form-control {{ validation.password }}" name="password" id="password" required>
+        <div class="invalid-feedback">password length must be at least 8 characters</div>
+    </div>
+    <div class="mb-3">
+        <label for="passwordConfirm">Confirm password</label>
+        <input type="password" class="form-control {{ validation.passwordConfirm}}" name="passwordConfirm"
+               id="passwordConfirm" required>
+        <div class="invalid-feedback">passwords do not match</div>
+    </div>
+    <button type="submit" class="btn btn-primary">Create new user</button>
+</form>
